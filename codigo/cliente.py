@@ -8,6 +8,7 @@ def agregar_cliente(nombre, direccion, telefono, correo):
     datos = (nombre, direccion, telefono, correo)
     cursor.execute(query, datos) #junta la sentencia
     cnx.commit() #la ejecuta
+    return #evaluar si tiene que retornar un string o un booleano
 
 
 def eliminar_cliente(id):
@@ -20,13 +21,14 @@ def eliminar_cliente(id):
 
         cursor.execute("DELETE FROM clientes WHERE id = %s", (id,))
         cnx.commit()
+        return
     except Exception as e:
         return
 
 
 def modificar_cliente(id, nombre, direccion, telefono, correo):
     try:
-        query = "UPDATE clientes SET nombre = %S, direccion = %s, telefono = %s, correo = %s WHERE id = %s"
+        query = "UPDATE clientes SET nombre = %s, direccion = %s, telefono = %s, correo = %s WHERE id = %s"
 
         cursor.execute(query, (nombre, direccion, telefono, correo, id))
         cnx.commit()
