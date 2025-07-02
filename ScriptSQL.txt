@@ -40,7 +40,8 @@ CREATE TABLE maquinas (
     idCliente INT,
     ubicacionCliente VARCHAR (100) NOT NULL,
     costoAlquilerMensual INT NOT NULL,
-    FOREIGN KEY (idCliente) REFERENCES clientes(id)
+    FOREIGN KEY (idCliente) REFERENCES clientes(id),
+    CONSTRAINT UnicoClienteYUbicacion UNIQUE (idCliente, ubicacionCliente)
 );
 
 
@@ -68,10 +69,11 @@ CREATE TABLE mantenimientos (
     idMaquina INT,
     ciTecnico VARCHAR(20) NOT NULL,
     tipo VARCHAR(50) NOT NULL,
-    fecha DATE NOT NULL,
+    fecha DATETIME NOT NULL,
     observaciones VARCHAR (150),
     FOREIGN KEY (idMaquina) REFERENCES maquinas(id),
-    FOREIGN KEY (ciTecnico) REFERENCES tecnicos(ci)
+    FOREIGN KEY (ciTecnico) REFERENCES tecnicos(ci),
+    CONSTRAINT DiferenteHora UNIQUE (fecha,ciTecnico)
 );
 
 #--------------------------------------------------------------------------------------------
@@ -107,7 +109,7 @@ INSERT INTO maquinas(id, modelo, idCliente, ubicacionCliente, costoAlquilerMensu
 (1,'Modelo A',1,'Av. italia 123', 100),
 (2,'Modelo B',2,'Americo  ricaldoni 800', 120),
 (3,'Modelo Premium',3,'Ellauri 111',150),
-(4,'Modelo C',1,'Av. italia 123', 120);
+(4,'Modelo C',1,'Rio bravo 444', 120);
 
 INSERT INTO registroConsumo(id, idMaquina, idInsumo, fecha, cantidadUsada) VALUES
 (1,1,1,'2025-06-01',20),
@@ -133,13 +135,13 @@ INSERT INTO tecnicos(ci, nombre, apellido, telefono) VALUES
 (78987898,'Mechor', 'Dumbledore', 234566666);
 
 INSERT INTO mantenimientos (id, idMaquina, ciTecnico, tipo, fecha, observaciones) VALUES
-(1,1,'66543212','Preventivo','2025-06-01','Chequeo general y limpieza de la unidad'),
-(2,2,'33445566','Asistencia','2025-06-02','Revisión por atasco'),
-(3,3,'78987898','Preventivo','2025-06-03','Mantenimiento programado'),
-(4,2,'66543212','Asistencia','2025-06-05','Se cambió el dosificador de azúcar'),
-(5,1,'33445566','Preventivo','2025-06-06','Chequeo mensual'),
-(6,3,'78987898','Asistencia','2025-06-07','Cliente reportó corte de energía'),
-(7,2,'66543212','Preventivo','2025-06-04','Chequeo general y limpieza de la unidad');
+(1,1,'66543212','Preventivo','2025-06-01 15:30:00','Chequeo general y limpieza de la unidad'),
+(2,2,'33445566','Asistencia','2025-06-02 18:00:00','Revisión por atasco'),
+(3,3,'78987898','Preventivo','2025-06-03 10:00:00','Mantenimiento programado'),
+(4,2,'66543212','Asistencia','2025-06-05 22:00:00','Se cambió el dosificador de azúcar'),
+(5,1,'33445566','Preventivo','2025-06-06 12:45:00','Chequeo mensual'),
+(6,3,'78987898','Asistencia','2025-06-07 23:15:00','Cliente reportó corte de energía'),
+(7,2,'66543212','Preventivo','2025-06-04 00:00:00','Chequeo general y limpieza de la unidad');
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -147,8 +149,9 @@ SELECT c.nombre AS cliente, SUM(DISTINCT m.costoAlquilerMensual) AS totalAlquile
 FROM clientes c JOIN maquinas m ON c.id = m.idCliente
 JOIN registroConsumo rc ON m.id = rc.idMaquina
 JOIN insumos i ON rc.idInsumo = i.id
-WHERE MONTH(rc.fecha) = 6 AND YEAR(rc.fecha) = 2025
+WHERE MONTH(rc.fecha) = MONTH(CURDATE()-interval 1 MONTH ) AND YEAR(rc.fecha) = YEAR(CURDATE())
 GROUP BY c.id;
+
 
 SELECT i.descripcion AS insumo, SUM(rc.cantidadUsada) AS totalCantidad, SUM(rc.cantidadUsada * i.precioUnitario) AS totalCosto
 FROM insumos i JOIN registroConsumo rc ON i.id = rc.idInsumo
@@ -164,20 +167,4 @@ SELECT c.nombre, COUNT(m.id) AS cantidadMaquinas
 FROM clientes c JOIN maquinas m ON c.id = m.idCliente
 GROUP BY c.id
 ORDER BY cantidadMaquinas DESC;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
