@@ -7,10 +7,10 @@ def login(correo, contraseña):
     cnx = conexion()
     cursor = cnx.cursor()
 
-    cursor.execute("select correo, es_administrador from login where correo = %s and contraseña = %s", (correo, contraseña))
+    cursor.execute("select correo, esAdministrador from login where correo = %s and contraseña = %s", (correo, contraseña))
     user = cursor.fetchone()
 
-    user.close()
+    cnx.close()
 
     if user:
         return user
