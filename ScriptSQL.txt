@@ -1,0 +1,183 @@
+CREATE DATABASE CafesMarloy;
+USE CafesMarloy;
+
+CREATE TABLE login (
+    correo VARCHAR(50) PRIMARY KEY,
+    contraseña VARCHAR (50) NOT NULL,
+    esAdministrador BOOLEAN NOT NULL
+);
+
+
+CREATE TABLE proveedores (
+    id INT PRIMARY KEY,
+    nombre VARCHAR (50) NOT NULL,
+    contacto VARCHAR (100) NOT NULL
+);
+
+
+CREATE TABLE insumos (
+    id INT PRIMARY KEY,
+    descripcion VARCHAR (100) NOT NULL ,
+    tipo VARCHAR (50) NOT NULL,
+    precioUnitario INT NOT NULL,
+    idProveedor INT NOT NULL,
+    FOREIGN KEY (idProveedor) REFERENCES proveedores(id)
+);
+
+
+CREATE TABLE clientes (
+    id INT PRIMARY KEY,
+    nombre VARCHAR (50) NOT NULL,
+    direccion VARCHAR (100),
+    telefono VARCHAR (20) NOT NULL,
+    correo VARCHAR (50) NOT NULL
+);
+
+
+CREATE TABLE maquinas (
+    id INT PRIMARY KEY,
+    modelo VARCHAR (50) NOT NULL,
+    idCliente INT,
+    ubicacionCliente VARCHAR (100) NOT NULL,
+    costoAlquilerMensual INT NOT NULL,
+    FOREIGN KEY (idCliente) REFERENCES clientes(id)
+);
+
+
+CREATE TABLE registroConsumo (
+    id INT PRIMARY KEY,
+    idMaquina INT NOT NULL,
+    idInsumo INT NOT NULL,
+    fecha DATE NOT NULL,
+    cantidadUsada INT NOT NULL,
+    FOREIGN KEY (idMaquina) REFERENCES maquinas(id),
+    FOREIGN KEY (idInsumo) REFERENCES insumos(id)
+);
+
+
+CREATE TABLE tecnicos (
+    ci VARCHAR(20) PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    apellido VARCHAR(100) NOT NULL,
+    telefono VARCHAR(20) NOT NULL
+);
+
+
+CREATE TABLE mantenimientos (
+    id INT PRIMARY KEY,
+    idMaquina INT,
+    ciTecnico VARCHAR(20) NOT NULL,
+    tipo VARCHAR(50) NOT NULL,
+    fecha DATE NOT NULL,
+    observaciones VARCHAR (150),
+    FOREIGN KEY (idMaquina) REFERENCES maquinas(id),
+    FOREIGN KEY (ciTecnico) REFERENCES tecnicos(ci)
+);
+
+#--------------------------------------------------------------------------------------------
+
+INSERT INTO login(correo, contraseña, esAdministrador) VALUES
+('aguspalladino1@gmail.com', 'Agus1891', False),
+('juanchiB@gmail.com', 'Juanchi1899', False),
+('martiBar@gmail.com', 'marti1899', false),
+('sebafon@gmail.com', 'fonse0510', False),
+('ferresseba@gmail.com', 'ferresS', True);
+
+INSERT INTO proveedores (id, nombre, contacto) VALUES
+(1,'Jose', 093847322),
+(2,'Manuel', 094775466),
+(3,'Hernesto', 093388095),
+(4,'Ivan', 094761332);
+
+INSERT INTO insumos(id, descripcion, tipo, precioUnitario, idProveedor) VALUES
+(1,'Cafe', 'Cafe', 50, 1),
+(2,'Leche en polvo', 'Leche', 40, 3),
+(3,'Chocolate','Chocolate', 30, 4),
+(4,'Azucar blanco', 'Endulzante', 10, 1),
+(5,'Stevia', 'Endulzante', 15, 1),
+(6,'Leche deslactozada', 'Leche', 45, 3),
+(7,'Jarabe de agave', 'Endulzante',25,1);
+
+INSERT INTO clientes(id, nombre, direccion, telefono, correo) VALUES
+(1, 'Sucursal este', 'Av. italia 123', 099433332, 'AvItalia@gmail.com'),
+(2, 'Edificio central', 'Americo  ricaldoni 800', 097070707, 'ARicald@gmail.com'),
+(3, 'Hospital militar', 'Ellauri 111', 094433221, 'Hmili@gmail.com');
+
+INSERT INTO maquinas(id, modelo, idCliente, ubicacionCliente, costoAlquilerMensual) VALUES
+(1,'Modelo A',1,'Av. italia 123', 100),
+(2,'Modelo B',2,'Americo  ricaldoni 800', 120),
+(3,'Modelo Premium',3,'Ellauri 111',150),
+(4,'Modelo C',1,'Av. italia 123', 120);
+
+INSERT INTO registroConsumo(id, idMaquina, idInsumo, fecha, cantidadUsada) VALUES
+(1,1,1,'2025-06-01',20),
+(2,1,2,'2025-06-01',10),
+(3,1,4,'2025-06-01',5),
+(4,1,5,'2025-06-02',4),
+(5,1,3,'2025-06-02',6),
+
+(6,2,1,'2025-06-01',25),
+(7,2,6,'2025-06-01',8),
+(8,2,4,'2025-06-03',5),
+(9,2,7,'2025-06-03',3),
+
+(10,3,1,'2025-06-02',30),
+(11,3,2,'2025-06-02',12),
+(12,3,5,'2025-06-03',6),
+(13,3,3,'2025-06-04',10),
+(14,3,7,'2025-06-04',5);
+
+INSERT INTO tecnicos(ci, nombre, apellido, telefono) VALUES
+(66543212,'Gaspar', 'Nuñez', 099887766),
+(33445566,'Baltazar', 'Potter', 091234567),
+(78987898,'Mechor', 'Dumbledore', 234566666);
+
+INSERT INTO mantenimientos (id, idMaquina, ciTecnico, tipo, fecha, observaciones) VALUES
+(1,1,'66543212','Preventivo','2025-06-01','Chequeo general y limpieza de la unidad'),
+(2,2,'33445566','Asistencia','2025-06-02','Revisión por atasco'),
+(3,3,'78987898','Preventivo','2025-06-03','Mantenimiento programado'),
+(4,2,'66543212','Asistencia','2025-06-05','Se cambió el dosificador de azúcar'),
+(5,1,'33445566','Preventivo','2025-06-06','Chequeo mensual'),
+(6,3,'78987898','Asistencia','2025-06-07','Cliente reportó corte de energía'),
+(7,2,'66543212','Preventivo','2025-06-04','Chequeo general y limpieza de la unidad');
+
+#--------------------------------------------------------------------------------------------------------------------------------------------------
+
+SELECT c.nombre AS cliente, SUM(DISTINCT m.costoAlquilerMensual) AS totalAlquiler, SUM(rc.cantidadUsada * i.precioUnitario) AS totalConsumo, SUM(DISTINCT m.costoAlquilerMensual) + SUM(rc.cantidadUsada * i.precioUnitario) AS totalMensual
+FROM clientes c JOIN maquinas m ON c.id = m.idCliente
+JOIN registroConsumo rc ON m.id = rc.idMaquina
+JOIN insumos i ON rc.idInsumo = i.id
+WHERE MONTH(rc.fecha) = 6 AND YEAR(rc.fecha) = 2025
+GROUP BY c.id;
+
+SELECT i.descripcion AS insumo, SUM(rc.cantidadUsada) AS totalCantidad, SUM(rc.cantidadUsada * i.precioUnitario) AS totalCosto
+FROM insumos i JOIN registroConsumo rc ON i.id = rc.idInsumo
+GROUP BY i.id
+ORDER BY totalCantidad DESC;
+
+SELECT t.nombre, t.apellido, COUNT(m.id) AS totalMantenimientos
+FROM tecnicos t JOIN mantenimientos m ON t.ci = m.ciTecnico
+GROUP BY t.ci
+ORDER BY totalMantenimientos DESC;
+
+SELECT c.nombre, COUNT(m.id) AS cantidadMaquinas
+FROM clientes c JOIN maquinas m ON c.id = m.idCliente
+GROUP BY c.id
+ORDER BY cantidadMaquinas DESC;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
