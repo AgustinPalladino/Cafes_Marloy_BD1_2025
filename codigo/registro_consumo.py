@@ -1,6 +1,12 @@
 from base_de_datos import conexion
+from datetime import datetime
 
 def agregar_consumo(id_maquina, id_insumo, cantidad_usada, fecha):
+    try:
+        datetime.strptime(fecha, "%Y-%m-%d")  # Validar formato de fecha
+    except ValueError:
+        return {"exito": False, "mensaje": "Fecha inválida. Formato esperado: YYYY-MM-DD"}
+
     try:
         cnx = conexion()
         cursor = cnx.cursor() #traemos la conexion de la clase base_de_datos
@@ -9,10 +15,10 @@ def agregar_consumo(id_maquina, id_insumo, cantidad_usada, fecha):
         cursor.execute(query, datos) #junta la sentencia
         cnx.commit() #la ejecuta
         cnx.close()
-        return
+        return {"exito:": True, "mensaje": "Registro consumo agregado correctamente."}
 
     except Exception as error:
-        return
+        return {"exito": False, "mensaje": "Error al registrar consumo."}
 
 def calcular_costo_insumos_mensual(mes, anio):
     try:
@@ -33,14 +39,14 @@ def calcular_costo_insumos_mensual(mes, anio):
         cnx.commit() #la ejecuta
         cnx.close()
 
-        lista_resultado = [] #devolvemos un diccionario para los que se encargan del front end, cosas a cambiar: las demas funciones
+        lista_resultado = []
         for cliente, costo in resultados:
             lista_resultado.append({
                 "cliente": cliente,
                 "costo_total": round(costo, 2)
             })
 
-        return lista_resultado
+        return {"exito": True, "mensaje": lista_resultado}
 
     except Exception as error:
-        return
+        return {"exito": False, "mensaje": "Error al calcular el costo mensual."}
