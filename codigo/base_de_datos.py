@@ -7,7 +7,7 @@ def login(correo, contraseña):
     cnx = conexion()
     cursor = cnx.cursor()
 
-    cursor.execute("select correo, esAdministrador from login where correo = %s and contraseña = %s", (correo, contraseña))
+    cursor.execute("SELECT correo, esAdministrador FROM login WHERE correo = %s AND contraseña = %s", (correo, contraseña))
     user = cursor.fetchone()
 
     cnx.close()
@@ -15,4 +15,4 @@ def login(correo, contraseña):
     if user:
         return user
     else:
-        return None #Usar string?
+        return None 

@@ -3,15 +3,15 @@ from datetime import datetime
 
 def agregar_mantenimiento(id_maquina, ci_tecnico, tipo, fecha, observaciones):
     if not str(id_maquina).isdigit():
-        return {"exito": False, "mensaje": "El id de la maquina debe ser numerico."}
+        return "No se ha podido agregar el mantenimiento. El id de la maquina debe ser numerico."
     if not str(ci_tecnico).isdigit():
-        return {"exito": False, "mensaje": "La cedula debe ser solo numeros, sin puntos, ni guiones."}
+        return "No se ha podido agregar el mantenimiento. La cedula debe ser solo numeros, sin puntos, ni guiones."
     if not tipo:
-        return {"exito": False, "mensaje": "Tipo de mantenimiento no puede estar vacio."}
+        return "No se ha podido agregar el mantenimiento. Tipo de mantenimiento no puede estar vacio."
     try:
-        datetime.strptime(fecha, "%Y-%m-%d %H:%M:%S")  # Validar formato de fecha
+        datetime.strptime(fecha, "%Y-%M-%D %H:%M:%S")  # Validar formato de fecha
     except ValueError:
-        return {"exito": False, "mensaje": "Fecha inválida. Formato esperado: YYYY-MM-DD HH:MM:SS"}
+        return "No se ha podido agregar el mantenimiento. Fecha inválida. Formato esperado: YYYY-MM-DD HH:MM:SS"
 
     try:
         cnx = conexion()
@@ -22,13 +22,13 @@ def agregar_mantenimiento(id_maquina, ci_tecnico, tipo, fecha, observaciones):
         cursor.execute(query, datos) #escribe la sentencia
         cnx.commit() #la ejecuta
         cnx.close() #cerramos la conexion
-        return {"exito:": True, "mensaje": "Mantenimiento agregado correctamente."}
+        return "Mantenimiento agregado correctamente."
     except Exception as error:
-        return {"exito": False, "mensaje": "Error al agregar el mantenimiento."}
+        return "No se ha podido agregar el mantenimiento. Error al agregar el mantenimiento."
 
 def eliminar_mantenimiento(id):
     if not str(id).isdigit():
-        return {"exito": False, "mensaje": "El id debe ser numerico."}
+        return "No se ha podido eliminar el mantenimiento. El id debe ser numerico."
 
     try:
         cnx = conexion()
@@ -38,29 +38,29 @@ def eliminar_mantenimiento(id):
         mantenim = cursor.fetchone()
 
         if mantenim is None:
-            return {"exito": False, "mensaje": "No existe ese mantenimiento con esa ID"}
+            return "No se ha podido eliminar el mantenimiento. No existe ese mantenimiento con esa ID"
 
         cursor.execute("DELETE FROM mantenimientos WHERE id = %s", (id,))
         cnx.commit()
         cnx.close()
-        return {"exito:": True, "mensaje": "Mantenimiento eliminado correctamente."}
+        return "Mantenimiento eliminado correctamente."
 
     except Exception as error:
-        return {"exito": False, "mensaje": "Error al eliminar el mantenimiento."}
+        return "No se ha podido eliminar el mantenimiento. Error al eliminar el mantenimiento."
 
 def modificar_mantenimiento(id, id_maquina, ci_tecnico, tipo, fecha, observaciones):
     if not str(id).isdigit():
-        return {"exito": False, "mensaje": "El id debe ser numerico."}
+        return "No se ha podido modificar el mantenimiento. El id debe ser numerico."
     if not str(id_maquina).isdigit():
-        return {"exito": False, "mensaje": "El id de la maquina debe ser numerico."}
+        return "No se ha podido modificar el mantenimiento. El id de la maquina debe ser numerico."
     if not str(ci_tecnico).isdigit():
-        return {"exito": False, "mensaje": "La cedula debe ser solo numeros, sin puntos, ni guiones."}
+        return "No se ha podido modificar el mantenimiento. La cedula debe ser solo numeros, sin puntos, ni guiones."
     if not tipo:
-        return {"exito": False, "mensaje": "Tipo de mantenimiento no puede estar vacio."}
+        return "No se ha podido modificar el mantenimiento. Tipo de mantenimiento no puede estar vacio."
     try:
-        datetime.strptime(fecha, "%Y-%m-%d %H:%M:%S")  # Validar formato de fecha
+        datetime.strptime(fecha, "%Y-%M-%D %H:%M:%S")  # Validar formato de fecha
     except ValueError:
-        return {"exito": False, "mensaje": "Fecha inválida. Formato esperado: YYYY-MM-DD HH:MM:SS"}
+        return "No se ha podido modificar el mantenimiento. Fecha inválida. Formato esperado: YYYY-MM-DD HH:MM:SS"
 
     try:
         cnx = conexion()
@@ -70,14 +70,14 @@ def modificar_mantenimiento(id, id_maquina, ci_tecnico, tipo, fecha, observacion
         mantenim = cursor.fetchone()
 
         if mantenim is None:
-            return {"exito": False, "mensaje": "No existe ese mantenimiento con esa ID"}
+            return "No se ha podido modificar el mantenimiento. No existe ese mantenimiento con esa ID"
 
         query = ("UPDATE mantenimientos SET idMaquina = %s, ciTecnico = %s, tipo = %s, fecha = %s, observaciones = %s "
                  "WHERE id = %s")
         cursor.execute(query, (id_maquina, ci_tecnico, tipo, fecha, observaciones, id))
         cnx.commit()
         cnx.close()
-        return {"exito:": True, "mensaje": "Mantenimiento modificado correctamente."}
+        return "Mantenimiento modificado correctamente."
 
     except Exception as error:
-        return {"exito": False, "mensaje": "Error al modificar el mantenimiento."}
+        return "No se ha podido modificar el mantenimiento. Error al modificar el mantenimiento."
