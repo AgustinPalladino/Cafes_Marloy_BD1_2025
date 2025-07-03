@@ -5,11 +5,11 @@ import re
 
 def agregar_cliente(nombre, direccion, telefono, correo):
     if not all([nombre, direccion, telefono, correo]):
-        return {"exito": False, "mensaje": "Todos los campos son necesarios."}
+        return "No se ha podido agregar el cliente. Todos los campos son necesarios."
     if not telefono.isdigit():
-        return {"exito": False, "mensaje": "El teléfono debe contener solo números."}
+        return "No se ha podido agregar el cliente. El teléfono debe contener solo números."
     if not re.match(r'^[\w\.-]+@[\w\.-]+\.\w+$', correo):
-        return {"exito": False, "mensaje": "Correo invalido"}
+        return "No se ha podido agregar el cliente. Correo invalido."
 
     try:
         cnx = conexion()
@@ -19,15 +19,15 @@ def agregar_cliente(nombre, direccion, telefono, correo):
         cursor.execute(query, datos) #escribe la sentencia
         cnx.commit() #la ejecuta
         cnx.close() #cerramos la conexion
-        return {"exito:": True, "mensaje": "Cliente agregado correctamente."}
+        return "Cliente agregado correctamente."
 
     except Exception as error:
-        return {"exito": False, "mensaje": "Error al agregar el cliente."}
+        return "No se ha podido agregar el cliente. Error al agregar el cliente."
 
 
 def eliminar_cliente(id):
     if not str(id).isdigit():
-        return {"exito": False, "mensaje": "ID invalido."}
+        return "No se ha podido eliminar el cliente. ID invalido."
 
     try:
         cnx = conexion()
@@ -42,20 +42,20 @@ def eliminar_cliente(id):
         cursor.execute("DELETE FROM clientes WHERE id = %s", (id,))
         cnx.commit()
         cnx.close()
-        return {"exito: ": True, "mensaje": "Cliente eliminado correctamente."}
+        return "Cliente eliminado correctamente."
     except Exception as error:
-        return {"exito": False, "mensaje": "Error al eliminar el cliente."}
+        return "No se ha podido eliminar el cliente. Error al eliminar el cliente."
 
 
 def modificar_cliente(id, nombre, direccion, telefono, correo):
     if not str(id).isdigit():
-        return {"exito": False, "mensaje": "ID invalido."}
+        return "No se ha podido modificar el cliente. ID invalido."
     if not all([nombre, direccion, telefono, correo]):
-        return {"exito": False, "mensaje": "Todos los campos son obligatorios."}
+        return "No se ha podido modificar el cliente. Todos los campos son obligatorios."
     if not telefono.isdigit():
-        return {"exito": False, "mensaje": "El teléfono debe contener solo números."}
+        return "No se ha podido modificar el cliente. El teléfono debe contener solo números."
     if not re.match(r'^[\w\.-]+@[\w\.-]+\.\w+$', correo):
-        return {"exito": False, "mensaje": "Correo invalido"}
+        return "No se ha podido modificar el cliente. Correo invalido."
 
     try:
         cnx = conexion()
@@ -71,6 +71,6 @@ def modificar_cliente(id, nombre, direccion, telefono, correo):
         cursor.execute(query, (nombre, direccion, telefono, correo, id))
         cnx.commit()
         cnx.close()
-        return {"exito:": True, "mensaje": "Cliente modificado correctamente."}
+        return "Cliente modificado correctamente."
     except Exception as error:
-        return {"exito": False, "mensaje": "Error al modificar el cliente."}
+        return "No se ha podido modificar el cliente. Error al modificar el cliente."
