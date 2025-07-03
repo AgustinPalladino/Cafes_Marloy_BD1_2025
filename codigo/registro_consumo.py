@@ -24,14 +24,15 @@ def calcular_costo_insumos_mensual(mes, anio):
     try:
         cnx = conexion()
         cursor = cnx.cursor() #traemos la conexion de la clase base_de_datos
-        query = ("SELECT c.nombre AS cliente, SUM(rc.cantidadUsada * i.precioUnitario) AS costo_total_insumos"
-                 "from registroConsumo rc"
-                 "join maquinas m ON rc.idMaquina = m.id"
-                 "join clientes c ON m.idCliente = c.id"
-                 "join insumos i ON rc.idInsumos = i.id"
-                 "where MONTH(rc.fecha) = %s AND YEAR(rc.fecha) = %s"
-                 "group by c.nombre"
-                 "order by costo_total_insumos DESC") #%s para evitar injeccion y formatear correctamente los valores
+        query = ("SELECT c.nombre AS cliente, "
+                "SUM(rc.cantidadUsada * i.precioUnitario) AS costo_total_insumos "
+                "FROM registroConsumo rc "
+                "JOIN maquinas m ON rc.idMaquina = m.id "
+                "JOIN clientes c ON m.idCliente = c.id "
+                "JOIN insumos i ON rc.idInsumo = i.id "
+                "WHERE MONTH(rc.fecha) = %s AND YEAR(rc.fecha) = %s "
+                "GROUP BY c.nombre "
+                "ORDER BY costo_total_insumos DESC") #%s para evitar injeccion y formatear correctamente los valores
 
         cursor.execute(query, (mes, anio)) #junta la sentencia
         resultados = cursor.fetchall()
@@ -49,4 +50,4 @@ def calcular_costo_insumos_mensual(mes, anio):
         return {"exito": True, "mensaje": lista_resultado}
 
     except Exception as error:
-        return {"exito": False, "mensaje": "Error al calcular el costo mensual."}
+      return {"exito": False, "mensaje": "Error al calcular el costo mensual."}

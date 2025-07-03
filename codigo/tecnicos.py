@@ -38,6 +38,12 @@ def eliminar_tecnico(ci, usuario):
         tec = cursor.fetchone()
         if tec is None:
             return {"exito": False, "mensaje": "No existe ese tecnico con esa cedula"}
+        
+        cursor.execute("SELECT COUNT(*) FROM mantenimientos WHERE ciTecnico = %s", (ci,))
+        cantidad = cursor.fetchone()[0] 
+        if cantidad > 0:
+            return {"exito": False, "mensaje": "El técnico tiene mantenimientos asignados y no puede ser eliminado."}
+
 
         cursor.execute("delete from tecnicos where ci = %s", (ci,))
         cnx.commit()

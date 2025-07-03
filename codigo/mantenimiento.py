@@ -9,9 +9,9 @@ def agregar_mantenimiento(id_maquina, ci_tecnico, tipo, fecha, observaciones):
     if not tipo:
         return {"exito": False, "mensaje": "Tipo de mantenimiento no puede estar vacio."}
     try:
-        datetime.strptime(fecha, "%Y-%m-%d")  # Validar formato de fecha
+        datetime.strptime(fecha, "%Y-%m-%d %H:%M:%S")  # Validar formato de fecha
     except ValueError:
-        return {"exito": False, "mensaje": "Fecha inválida. Formato esperado: YYYY-MM-DD"}
+        return {"exito": False, "mensaje": "Fecha inválida. Formato esperado: YYYY-MM-DD HH:MM:SS"}
 
     try:
         cnx = conexion()
@@ -58,9 +58,9 @@ def modificar_mantenimiento(id, id_maquina, ci_tecnico, tipo, fecha, observacion
     if not tipo:
         return {"exito": False, "mensaje": "Tipo de mantenimiento no puede estar vacio."}
     try:
-        datetime.strptime(fecha, "%Y-%m-%d")  # Validar formato de fecha
+        datetime.strptime(fecha, "%Y-%m-%d %H:%M:%S")  # Validar formato de fecha
     except ValueError:
-        return {"exito": False, "mensaje": "Fecha inválida. Formato esperado: YYYY-MM-DD"}
+        return {"exito": False, "mensaje": "Fecha inválida. Formato esperado: YYYY-MM-DD HH:MM:SS"}
 
     try:
         cnx = conexion()

@@ -37,6 +37,11 @@ def eliminar_maquina(id, usuario):
         maquin = cursor.fetchone()
         if maquin is None:
             return {"exito": False, "mensaje": "No existe maquina con esa ID"}
+        
+        cursor.execute("SELECT COUNT(*) FROM mantenimientos WHERE idMaquina = %s", (id,))
+        if cursor.fetchone()[0] > 0:
+            return {"exito": False, "mensaje": "La máquina tiene mantenimientos asignados y no puede ser eliminada."}
+
 
         cursor.execute("delete from maquinas where id = %s", (id,))
         cnx.commit()
