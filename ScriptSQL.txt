@@ -142,3 +142,28 @@ INSERT INTO mantenimientos (idMaquina, ciTecnico, tipo, fecha, observaciones) VA
 (1,'33445566','Preventivo','2025-06-06 12:45:00','Chequeo mensual'),
 (3,'78987898','Asistencia','2025-06-07 23:15:00','Cliente reportó corte de energía'),
 (2,'66543212','Preventivo','2025-06-04 00:00:00','Chequeo general y limpieza de la unidad');
+
+---------------------------------------------------------------------------------------------------
+
+SELECT c.nombre AS cliente, SUM(DISTINCT m.costoAlquilerMensual) AS totalAlquiler, SUM(rc.cantidadUsada * i.precioUnitario) AS totalConsumo, SUM(DISTINCT m.costoAlquilerMensual) + SUM(rc.cantidadUsada * i.precioUnitario) AS totalMensual
+FROM clientes c JOIN maquinas m ON c.id = m.idCliente
+JOIN registroConsumo rc ON m.id = rc.idMaquina
+JOIN insumos i ON rc.idInsumo = i.id
+WHERE MONTH(rc.fecha) = MONTH(CURDATE()-interval 1 MONTH ) AND YEAR(rc.fecha) = YEAR(CURDATE())
+GROUP BY c.id;
+
+
+SELECT i.descripcion AS insumo, SUM(rc.cantidadUsada) AS totalCantidad, SUM(rc.cantidadUsada * i.precioUnitario) AS totalCosto
+FROM insumos i JOIN registroConsumo rc ON i.id = rc.idInsumo
+GROUP BY i.id
+ORDER BY totalCantidad DESC;
+
+SELECT t.nombre, t.apellido, COUNT(m.id) AS totalMantenimientos
+FROM tecnicos t JOIN mantenimientos m ON t.ci = m.ciTecnico
+GROUP BY t.ci
+ORDER BY totalMantenimientos DESC;
+
+SELECT c.nombre, COUNT(m.id) AS cantidadMaquinas
+FROM clientes c JOIN maquinas m ON c.id = m.idCliente
+GROUP BY c.id
+ORDER BY cantidadMaquinas DESC;
