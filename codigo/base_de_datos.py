@@ -1,7 +1,7 @@
 import mysql.connector
 
 def conexion():
-    return mysql.connector.connect(host='127.0.0.1', user='root', password='Cambiar contraseña', database= 'CafesMarloy')
+    return mysql.connector.connect(host='127.0.0.1', user='root', password='rootpassword', database= 'CafesMarloy')
 
 def login(correo, contraseña):
     cnx = conexion()
